@@ -23,3 +23,4 @@ except Exception as ex:
     sys.exit(1)
 
 
+barca_data = convert_to_date(barca_data, ['MatchDate'], log)
