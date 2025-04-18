@@ -21,12 +21,11 @@ def overall_panel():
         'An Over view of the Game Barca Played from 2000 to 2025',
         ui.row(
             ui.column(
-                2, ui.card('Over All Data', ui.output_data_frame('barca_num_of_match_played_overall'))
+                4, ui.card('Over All Data', ui.output_data_frame('barca_num_of_match_played_overall'), style='height: 400px; overflow-y: auto;')
             ),
             ui.column(
-                10, output_widget('overall_match_bar_graph')
+                8, ui.card(output_widget('overall_match_bar_graph'), style='height: 400px;')
             ),
-            width = '5px',
         )
     )
 
@@ -48,7 +47,7 @@ def overall_panel_server(input,output,session):
      def overall_match_bar_graph():
         df = year_data.get()
 
-        fig = plot_bar_graph(df, x_col= 'Year', y_col='Number Of Games Played', log=log)
+        fig = plot_bar_graph(df, x_col= 'Year', y_col='Number Of Games Played', log=log, color=['#004D98'])
         
         return fig
 
