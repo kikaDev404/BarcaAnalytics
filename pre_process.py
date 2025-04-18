@@ -24,3 +24,4 @@ except Exception as ex:
 
 
 barca_data = convert_to_date(barca_data, ['MatchDate'], log)
+
