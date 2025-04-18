@@ -1,0 +1,59 @@
+import logging
+from os.path import dirname,abspath
+
+class LoggerSetup:
+    def __init__(self,log_name, log_file='logs/app.log', log_level=logging.DEBUG):
+        """
+        Initialize the LoggerSetup class.
+        
+        :param log_file: The log file where messages will be saved (default: 'app.log')
+        :param log_level: The minimum log level to capture (default: logging.DEBUG)
+        """
+        self.log_name = log_name
+        self.log_file = log_file
+        self.log_level = log_level
+        self._setup_logger()
+
+    def _setup_logger(self):
+        """
+        Set up the logger with both file and stream handlers.
+        Avoids using basicConfig to ensure independent loggers.
+        """
+        # Create a logger object
+        self.logger = logging.getLogger(self.log_name)
+        self.logger.setLevel(self.log_level)
+
+        # Create a file handler to write logs to a file
+        file_handler = logging.FileHandler(self.log_file)
+        file_handler.setLevel(self.log_level)
+
+        # Create a stream handler to output logs to the console
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(self.log_level)
+
+        # Create a formatter and set it for both handlers
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        file_handler.setFormatter(formatter)
+        stream_handler.setFormatter(formatter)
+
+        # Add both handlers to the logger
+        self.logger.addHandler(file_handler)
+        self.logger.addHandler(stream_handler)
+
+    def get_logger(self):
+        """
+        Retrieve the logger instance.
+        
+        :return: The logger instance
+        """
+        return self.logger
+
+
+class DIR_NAMES:
+    input_files = 'inputs'
+    log_folder = 'logs'
+    project_root = dirname(abspath(__file__))
+
+class FILE_NAMES:
+    base_barca_file = 'Barcelona.csv'
+    
