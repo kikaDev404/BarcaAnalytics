@@ -9,10 +9,10 @@ import sys
 
 # Initialize the logger setup
 logger_setup = config_log(log_name = 'pre_process',log_file=join(config.DIR_NAMES.log_folder, 'preprocess.log'), log_level=logging.INFO)
+log = logger_setup.get_logger()
 
 # Get the logger
 try:
-    log = logger_setup.get_logger()
     project_root =  os.path.dirname(os.path.abspath(__file__))
     log.info(f"Project Root : {project_root}")
     input_dir = join(project_root, config.DIR_NAMES.input_files)
