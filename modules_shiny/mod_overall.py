@@ -5,6 +5,7 @@ import config
 from os.path import join
 from shinywidgets import output_widget, render_widget
 from charts import*
+import ba_colors_collection.ba_colors as colors
 from pre_process import*
 
 project_root = config.DIR_NAMES.project_root
@@ -47,7 +48,7 @@ def overall_panel_server(input,output,session):
      def overall_match_bar_graph():
         df = year_data.get()
 
-        fig = plot_bar_graph(df, x_col= 'Year', y_col='Number Of Games Played', log=log, color=['#004D98'])
+        fig = plot_bar_graph(df, x_col= 'Year', y_col='Number Of Games Played', log=log, color=colors.ba_single_color.barca_blue)
         
         return fig
 
