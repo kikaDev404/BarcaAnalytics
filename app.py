@@ -21,7 +21,6 @@ app_ui = ui.page_fluid(
             'Overall',
             overall_panel("Overall"),  
         ),
-        fillable=True, 
     ),
 )
 
