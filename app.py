@@ -14,6 +14,8 @@ logger_setup = config_log('app.py',join(log_folder, 'main_app.log'),logging.INFO
 log_app = logger_setup.get_logger()
 log_app.info('Starting App UI')
 
+
+
 app_ui = ui.page_fluid(
     ui.panel_title("FC Barcelona Analytics"),
     ui.page_navbar( 
