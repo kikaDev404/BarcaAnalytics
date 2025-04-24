@@ -14,6 +14,8 @@ log_folder = join(project_root, config.DIR_NAMES.log_folder)
 log_obj = config_log('mod_overall', join(log_folder, 'mod_overall.log'), logging.INFO)
 log = log_obj.get_logger()
 
+
+
 log.info('Trying to rend Overall Panel')
 
 @module.ui
@@ -32,14 +34,15 @@ def overall_panel():
 
 @module.server
 def overall_panel_server(input,output,session):
-     
      year_data = reactive.Value()
     
      @output
      @render.data_frame
      def barca_num_of_match_played_overall():
+       print(barca_data)
        barca_data['Year'] = barca_data['MatchDate'].dt.year
-       temp = barca_data.groupby('Year').size().reset_index(name='Number Of Games Played')
+       temp = barca_data.groupby(['Year', 'Match Result']).size().reset_index(name='Number Of Games')
+       print(temp)
        year_data.set(temp)
        
        return render.DataGrid(temp)
@@ -48,7 +51,7 @@ def overall_panel_server(input,output,session):
      def overall_match_bar_graph():
         df = year_data.get()
 
-        fig = plot_bar_graph(df, x_col= 'Year', y_col='Number Of Games Played', log=log, color=colors.ba_single_color.barca_blue)
+        fig = plot_bar_graph_stacked(df, x_col= 'Year', y_col='Number Of Games', log=log, color_col='Match Result', color=colors.ba_sequential_color.barca_sequential_default_colors, text_col='Number Of Games')
         
         return fig
 
