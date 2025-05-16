@@ -40,10 +40,10 @@ def overall_panel_server(input,output,session):
      @render.data_frame
      def barca_num_of_match_played_overall():
        print(barca_data)
-       barca_data['Year'] = barca_data['MatchDate'].dt.year
-       temp = barca_data.groupby(['Year', 'Match Result']).size().reset_index(name='Number Of Games')
+       barca_data['Year'] = barca_data['Date'].dt.year
+       temp = barca_data.groupby(['Match Result', 'Season']).size().reset_index(name='Number Of Games')
        print(temp)
-       year_data.set(temp)
+       year_data.set(temp) 
        
        return render.DataGrid(temp)
 
@@ -51,8 +51,8 @@ def overall_panel_server(input,output,session):
      def overall_match_bar_graph():
         df = year_data.get()
 
-        fig = plot_bar_graph_stacked(df, x_col= 'Year', y_col='Number Of Games', log=log, color_col='Match Result', color=colors.ba_sequential_color.barca_sequential_default_colors, text_col='Number Of Games')
-        
+        fig = plot_bar_graph_stacked(df, x_col= 'Season', y_col='Number Of Games', log=log, color_col='Match Result', color=colors.ba_sequential_color.barca_sequential_default_colors, text_col='Number Of Games')
+        fig.update_layout(bargap=0.6)
         return fig
 
        

@@ -65,5 +65,17 @@ class FILE_NAMES:
         'season-1920.csv'
     ]
 
+class SEASON_DATES:
+    season_dates = {
+        'Season 19-20' : ('16-08-19' ,  '19-07-20'),
+        'Season 20-21' : ('12-09-20' , '23-05-21'),
+        'Season 21-22' : ('15-08-21',  '22-05-22'),
+        'Season 22-23' : ('12-08-22', '04-06-23'),
+        'Season 23-24' : ('11-08-23','26-05-24'),
+        'Season 24-25' : ('15-08-24', '25-05-25')
+    }
+
+class Match_Outcome_Order:
+    match_outcome_order = ['Lost', 'Draw', 'Win']
 
     
