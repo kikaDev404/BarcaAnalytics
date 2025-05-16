@@ -56,4 +56,14 @@ class DIR_NAMES:
 
 class FILE_NAMES:
     base_barca_file = 'Barcelona.csv'
+    season_data_file = [
+        'season-2425.csv',
+        'season-2324.csv',
+        'season-2223.csv',
+        'season-2122.csv',
+        'season-2021.csv',
+        'season-1920.csv'
+    ]
+
+
     
