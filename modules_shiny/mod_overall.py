@@ -33,15 +33,18 @@ def overall_panel():
     )
 
 @module.server
-def overall_panel_server(input,output,session):
+def overall_panel_server(input,output,session,match_played_place):
      year_data = reactive.Value()
-    
+     print('hi overall')
+
      @output
      @render.data_frame
      def barca_num_of_match_played_overall():
-       print(barca_data)
-       barca_data['Year'] = barca_data['Date'].dt.year
-       temp = barca_data.groupby(['Match Result', 'Season']).size().reset_index(name='Number Of Games')
+       print('hellllo',match_played_place())
+       barca_data_filtered = apply_filter(barca_data, match_played_place())
+       print(barca_data_filtered)
+       barca_data_filtered['Year'] = barca_data_filtered['Date'].dt.year
+       temp = barca_data_filtered.groupby(['Match Result', 'Season']).size().reset_index(name='Number Of Games')
        print(temp)
        year_data.set(temp) 
        

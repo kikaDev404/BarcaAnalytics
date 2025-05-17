@@ -28,4 +28,11 @@ def map_season(date):
         if pd.to_datetime(start, format='%d-%m-%y') <= date <= pd.to_datetime(end,format='%d-%m-%y'):
             return season
     return "Unknown"
+
+def apply_filter(df, match_played_palce):
+    if match_played_palce == 'Home & Away':
+        return df
+    elif match_played_palce == 'Home':
+        return df.loc[df['HomeTeam'] == 'Barcelona']
+    return df.loc[df['AwayTeam'] == 'Barcelona']
     
