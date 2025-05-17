@@ -29,7 +29,8 @@ def map_season(date):
             return season
     return "Unknown"
 
-def apply_filter(df, match_played_palce):
+def apply_filter(df, match_played_palce, log):
+    log.info(f'filtering the data for {match_played_palce}')
     if match_played_palce == 'Home & Away':
         return df
     elif match_played_palce == 'Home':
