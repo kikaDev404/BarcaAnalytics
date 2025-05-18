@@ -28,7 +28,7 @@ app_ui = ui.page_sidebar(
         ),
         ui.nav_panel(
             'EL - Classico',
-            el_classico_ui('ELClassico')
+            el_classico_ui('el_classico')
         )
     ),
     title="FC Barcelona Analytics"
@@ -38,7 +38,7 @@ app_ui = ui.page_sidebar(
 def server(input, output, session):
     match_played_place_filter = side_bar_server('sidebar')
     overall_panel_server('Overall', match_played_place=match_played_place_filter)
-    el_classico_server('ElClassico')
+    el_classico_server('el_classico',match_played_place_filter)
 
 # Run App
 app = App(app_ui, server)
