@@ -21,9 +21,10 @@ log.info('Trying to rend EL Classico Panel')
 @module.ui
 def el_classico_ui():
     return ui.card(
+        ui.card('Overall Classico Result', output_widget('overall_classico_result_plot')),
         ui.row(
-            ui.column(5, ui.card('EL Classico Season Data',ui.output_data_frame('season_summary_data_el_classico'))),
-            ui.column(7, ui.card('El Classico Seasonal Result Graph', output_widget('el_classico_seasonal_plot')))
+            ui.column(4, ui.card('EL Classico Season Data',ui.output_data_frame('season_summary_data_el_classico'))),
+            ui.column(8, ui.card('El Classico Seasonal Result Graph', output_widget('el_classico_seasonal_plot'))),
         )
     )
 
@@ -42,13 +43,30 @@ def el_classico_server(input,output,session,match_played_place):
     
     @render_widget
     def el_classico_seasonal_plot():
-        fig = plot_bar_graph_stacked(season_data_el_classico(), x_col='Season', y_col='Number of games', log = log, color_col='Match Result', text_col='Number of games')
+        fig = plot_bar_graph_stacked(season_data_el_classico(), x_col='Season', y_col='Number of games', log = log, color_col='Match Result', text_col='Number of games', color=colors.ba_sequential_color.barca_sequential_default_colors)
 
-        for trace in fig.data:
-            if trace.name == 'Win':
-                 trace.marker.color = colors.ba_single_color.barca_black
-            elif trace.name == 'Lost':
-                 trace.marker.color = colors.solid_colors.solid_white
-            elif trace.name == 'Draw':
-                 trace.marker.color = colors.ba_single_color.barca_yellow
+        # for trace in fig.data:
+        #     if trace.name == 'Win':
+        #          trace.marker.color = colors.ba_single_color.barca_black
+        #     elif trace.name == 'Lost':
+        #          trace.marker.color = colors.solid_colors.solid_white
+        #     elif trace.name == 'Draw':
+        #          trace.marker.color = colors.ba_single_color.barca_yellow
+        return fig
+    
+    @render_widget
+    def overall_classico_result_plot():
+        barca_data_filtered = apply_filter(barca_data, match_played_place(), log)
+        barca_data_filtered = barca_data_filtered.loc[(barca_data_filtered['HomeTeam'] == 'Real Madrid') | (barca_data_filtered['AwayTeam'] == 'Real Madrid')]
+        temp = barca_data_filtered.groupby(['Match Result']).size().reset_index(name='Number of games')
+        fig = plot_bar_graph_stacked(temp, x_col='Number of games', y_col='Match Result', log=log, orientation_type='h', color_col='Match Result', text_col='Number of games',color=colors.ba_sequential_color.barca_sequential_default_colors)  
+
+        # for trace in fig.data:
+        #     if trace.name == 'Win':
+        #             trace.marker.color = colors.ba_single_color.barca_black
+        #     elif trace.name == 'Lost':
+        #             trace.marker.color = colors.solid_colors.solid_white
+        #     elif trace.name == 'Draw':
+        #             trace.marker.color = colors.ba_single_color.barca_yellow
+    
         return fig
