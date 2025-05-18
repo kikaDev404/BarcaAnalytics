@@ -6,6 +6,9 @@ class ba_single_color:
     barca_yellow = ['#FFED02']
     barca_black = ['#000000 ']
 
+class solid_colors:
+    solid_white = '#FFFFFF'
+
 class ba_sequential_color:
     barca_sequential_default_colors = [
     '#004D98',  # barca_blue
