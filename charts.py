@@ -56,3 +56,21 @@ def add_gt_spanner(gt_obj : GT, lables_col_dict : dict, log,spanner_border_color
         log.error(f'Error Occured while adding GT spanner: {ex}')
 
     return gt_obj
+
+def conver_bar_plot_for_valuebox(fig,log):
+    log.info('Trying to convert the bar plot for value box plotting')
+    try:
+        fig.update_layout(
+        #height=150,
+        margin=dict(t=0, r=0, l=0, b=0),
+        xaxis=dict(visible=False, showgrid=False),
+        yaxis=dict(visible=False, showgrid=False),
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        showlegend=False,
+        )
+        log.info('Sucessfully converted the bargraph to a style for valuebox plotting')
+        return fig
+    
+    except Exception as ex:
+        log.error(f'Error occured while converting to the bar graph : {ex}')
