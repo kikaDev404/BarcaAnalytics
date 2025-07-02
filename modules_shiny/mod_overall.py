@@ -8,6 +8,8 @@ from charts import*
 import ba_colors_collection.ba_colors as colors
 from pre_process import*
 
+import plotly.express as px
+
 project_root = config.DIR_NAMES.project_root
 log_folder = join(project_root, config.DIR_NAMES.log_folder)
 
@@ -25,9 +27,9 @@ def overall_panel():
         ui.card(
             ui.row(
                 ui.column(3, ui.value_box('Total played', ui.output_text('total_match_played'))),
-                ui.column(3,ui.value_box('Won', ui.output_text('total_match_won'))),
-                ui.column(3,ui.value_box('Draw', ui.output_text('total_match_drawed'))),
-                ui.column(3,ui.value_box('Lost', ui.output_text('total_match_lost')))
+                ui.column(3,ui.value_box('Won', ui.output_text('total_match_won'), showcase=output_widget('won_bargraph'),showcase_layout="bottom",style="height: 200px; width: 100%;")),
+                ui.column(3,ui.value_box('Draw', ui.output_text('total_match_drawed'), showcase=output_widget('draw_bargraph'),showcase_layout="bottom",style="height: 200px; width: 100%;")),
+                ui.column(3,ui.value_box('Lost', ui.output_text('total_match_lost'), showcase=output_widget('lost_bargraph'),showcase_layout="bottom",style="height: 200px; width: 100%;"))
             ),
         ),
         ui.card(
@@ -91,6 +93,63 @@ def overall_panel_server(input,output,session,match_played_place):
 
         fig = plot_bar_graph_stacked(df, x_col= 'Season', y_col='Number Of Games', log=log, color_col='Match Result', color=colors.ba_sequential_color.barca_sequential_default_colors, text_col='Number Of Games')
         fig.update_layout(bargap=0.6)
+        return fig
+     
+     @render_widget()
+     def won_bargraph():
+        barca_data_filtered = apply_filter(barca_data, match_played_place(), log)
+        barca_data_filtered = barca_data_filtered.loc[barca_data_filtered['Match Result'] == 'Win']
+
+
+        # Group by Date and Match Result
+        temp = (
+            barca_data_filtered
+            .groupby(['Season'])
+            .size()
+            .reset_index(name='Number Of Games')
+            .sort_values('Season')
+        )
+        # Plot time series sparkline
+        fig = plot_bar_graph(temp,'Season','Number Of Games', log=log)
+        fig = conver_bar_plot_for_valuebox(fig,log)
+        return fig
+     
+     @render_widget()
+     def draw_bargraph():
+        barca_data_filtered = apply_filter(barca_data, match_played_place(), log)
+        barca_data_filtered = barca_data_filtered.loc[barca_data_filtered['Match Result'] == 'Draw']
+
+
+        # Group by Date and Match Result
+        temp = (
+            barca_data_filtered
+            .groupby(['Season'])
+            .size()
+            .reset_index(name='Number Of Games')
+            .sort_values('Season')
+        )
+        # Plot time series sparkline
+        fig = plot_bar_graph(temp,'Season','Number Of Games', log=log)
+        fig = conver_bar_plot_for_valuebox(fig,log)
+        return fig
+     
+     @render_widget()
+     def lost_bargraph():
+        barca_data_filtered = apply_filter(barca_data, match_played_place(), log)
+        barca_data_filtered = barca_data_filtered.loc[barca_data_filtered['Match Result'] == 'Lost']
+
+
+        # Group by Date and Match Result
+        temp = (
+            barca_data_filtered
+            .groupby(['Season'])
+            .size()
+            .reset_index(name='Number Of Games')
+            .sort_values('Season')
+        )
+        # Plot time series sparkline
+        fig = plot_bar_graph(temp,'Season','Number Of Games', log=log)
+        fig = conver_bar_plot_for_valuebox(fig,log)
         return fig
 
        
