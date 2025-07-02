@@ -7,6 +7,7 @@ from shinywidgets import output_widget, render_widget
 from charts import*
 import ba_colors_collection.ba_colors as colors
 from pre_process import*
+import faicons
 
 import plotly.express as px
 
@@ -26,8 +27,8 @@ def overall_panel():
         'An Over view of the Game Barca Played from 2000 to 2025',
         ui.card(
             ui.row(
-                ui.column(3, ui.value_box('Total played', ui.output_text('total_match_played'))),
-                ui.column(3,ui.value_box('Won', ui.output_text('total_match_won'), showcase=output_widget('won_bargraph'),showcase_layout="bottom",style="height: 200px; width: 100%;")),
+                ui.column(3, ui.value_box('Total played', ui.output_text('total_match_played'), showcase=faicons.icon_svg('futbol'),showcase_layout="bottom",style="height: 200px; width: 100%;")),
+                ui.column(3,ui.value_box('Won', ui.output_text('total_match_won'), showcase=output_widget('won_bargraph'),showcase_layout=("bottom"),style="height: 200px; width: 100%;")),
                 ui.column(3,ui.value_box('Draw', ui.output_text('total_match_drawed'), showcase=output_widget('draw_bargraph'),showcase_layout="bottom",style="height: 200px; width: 100%;")),
                 ui.column(3,ui.value_box('Lost', ui.output_text('total_match_lost'), showcase=output_widget('lost_bargraph'),showcase_layout="bottom",style="height: 200px; width: 100%;"))
             ),
@@ -136,10 +137,10 @@ def overall_panel_server(input,output,session,match_played_place):
      @render_widget()
      def lost_bargraph():
         barca_data_filtered = apply_filter(barca_data, match_played_place(), log)
-        barca_data_filtered = barca_data_filtered.loc[barca_data_filtered['Match Result'] == 'Lost']
+        barca_data_filtered = barca_data_filtered.loc[barca_data_filtered['Match Result'] == 'Lost'] 
 
 
-        # Group by Date and Match Result
+        # Group by Date and Match Result 
         temp = (
             barca_data_filtered
             .groupby(['Season'])
