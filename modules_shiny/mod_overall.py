@@ -27,7 +27,7 @@ def overall_panel():
         'An Over view of the Game Barca Played from 2000 to 2025',
         ui.card(
             ui.row(
-                ui.column(3, ui.value_box('Total played', ui.output_text('total_match_played'), showcase=faicons.icon_svg('futbol'),showcase_layout="bottom",style="height: 200px; width: 100%;")),
+                ui.column(3, ui.value_box('Total played', ui.output_text('total_match_played'), showcase=output_widget('total_played_bargraph'),showcase_layout="bottom",style="height: 200px; width: 100%;")),
                 ui.column(3,ui.value_box('Won', ui.output_text('total_match_won'), showcase=output_widget('won_bargraph'),showcase_layout=("bottom"),style="height: 200px; width: 100%;")),
                 ui.column(3,ui.value_box('Draw', ui.output_text('total_match_drawed'), showcase=output_widget('draw_bargraph'),showcase_layout="bottom",style="height: 200px; width: 100%;")),
                 ui.column(3,ui.value_box('Lost', ui.output_text('total_match_lost'), showcase=output_widget('lost_bargraph'),showcase_layout="bottom",style="height: 200px; width: 100%;"))
@@ -95,7 +95,22 @@ def overall_panel_server(input,output,session,match_played_place):
         fig = plot_bar_graph_stacked(df, x_col= 'Season', y_col='Number Of Games', log=log, color_col='Match Result', color=colors.ba_sequential_color.barca_sequential_default_colors, text_col='Number Of Games')
         fig.update_layout(bargap=0.6)
         return fig
-     
+     @render_widget
+     def total_played_bargraph():
+         barca_data_filtered = apply_filter(barca_data, match_played_place(),log)
+         # Group by Date and Match Result
+         temp = (
+               barca_data_filtered
+                .groupby(['Season'])
+                .size()
+                .reset_index(name='Number Of Games')
+                .sort_values('Season')
+            )
+            # Plot time series sparkline
+         fig = plot_bar_graph(temp,'Season','Number Of Games', log=log)
+         fig = conver_bar_plot_for_valuebox(fig,log)
+         return fig
+
      @render_widget()
      def won_bargraph():
         barca_data_filtered = apply_filter(barca_data, match_played_place(), log)
