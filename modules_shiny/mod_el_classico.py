@@ -7,6 +7,7 @@ from shinywidgets import output_widget, render_widget
 from charts import*
 import ba_colors_collection.ba_colors as colors
 from pre_process import*
+import numpy as np
 
 project_root = config.DIR_NAMES.project_root
 log_folder = join(project_root, config.DIR_NAMES.log_folder)
@@ -90,13 +91,61 @@ def el_classico_server(input,output,session,match_played_place):
         ht_result_score = {'Trailing': -1, 'Draw': 0, 'Lead': 1}
         ft_result_score = {'Lost': -1, 'Draw': 0, 'Win': 1}
 
+
+
+        def color_map_draw(df):
+            conditions = [
+                df['Half Time Result'] == 'Draw',
+                df['Half Time Result'] == 'Trailing',
+                df['Half Time Result'] == 'Leading'
+            ]
+            colors = ['Yellow', 'Green', 'Red']
+            return pd.Series(np.select(conditions, colors, default='White'), index=df.index)
+        
+        def color_map_win(df):
+            conditions = [
+                df['Half Time Result'] == 'Draw',
+                df['Half Time Result'] == 'Trailing',
+                df['Half Time Result'] == 'Leading'
+            ]
+            colors = ['Green', 'Green', 'Yellow']
+            return pd.Series(np.select(conditions, colors, default='White'), index=df.index)
+        
+        def color_map_lost(df):
+            conditions = [
+                df['Half Time Result'] == 'Draw',
+                df['Half Time Result'] == 'Trailing',
+                df['Half Time Result'] == 'Leading'
+            ]
+            colors = ['Yellow', 'Green', 'Red']
+            return pd.Series(np.select(conditions, colors, default='White'), index=df.index)
+        
+        def color_map_lost(df):
+            conditions = [
+                df['Half Time Result'] == 'Draw',
+                df['Half Time Result'] == 'Trailing',
+                df['Half Time Result'] == 'Leading'
+            ]
+            colors = ['Red', 'Yellow', 'Red']
+            return pd.Series(np.select(conditions, colors, default='White'), index=df.index)
+
+
         # def map_color(df, current_col):
         barca_data_filtered = apply_filter(barca_data, match_played_place(), log)
         barca_data_filtered = filter_el_classico(barca_data_filtered, 'HomeTeam', 'AwayTeam')
         temp = barca_data_filtered.groupby(['Half Time Result', 'Match Result']).size().reset_index(name = 'Count')
         pivoted_data = temp.pivot(index='Half Time Result', columns='Match Result', values='Count').fillna(0).astype(int).reset_index()
+        
 
         gt_table = make_gt_table(pivoted_data, log = log)
+
+        gt_table = (
+            gt_table
+            .tab_style(style=style.fill(color=color_map_draw),locations=loc.body(columns='Draw'))
+            .tab_style(style=style.fill(color=color_map_win),locations=loc.body(columns='Win'))
+            .tab_style(style=style.fill(color=color_map_lost),locations=loc.body(columns='Lost'))
+        )
+
         gt_table = add_gt_spanner(gt_table, {'Full Time Result' : ['Draw', 'Lost', 'Win']}, log = log)
         gt_table = gt_table.tab_options(table_width="50%")
         return ui.HTML(gt_table.as_raw_html())
