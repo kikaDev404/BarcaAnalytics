@@ -32,6 +32,12 @@ def overall_panel():
                 ui.column(3,ui.value_box('Draw', ui.output_text('total_match_drawed'), showcase=output_widget('draw_bargraph'),showcase_layout="bottom",style="height: 200px; width: 100%;")),
                 ui.column(3,ui.value_box('Lost', ui.output_text('total_match_lost'), showcase=output_widget('lost_bargraph'),showcase_layout="bottom",style="height: 200px; width: 100%;"))
             ),
+            # ui.div(
+            #     ui.row(
+            #         ui.column(4,ui.value_box('Total Win%', ui.output_text('total_win_pct'))),
+            #         ui.column(4,ui.value_box('Total Draw%', ui.output_text('total_draw_pct'))),
+            #         ui.column(4,ui.value_box('Total Lost%', ui.output_text('total_lost_pct'))),   
+            #     )),
         ),
         ui.card(
             ui.row(
@@ -40,10 +46,10 @@ def overall_panel():
                 ),
                 ui.column(
                     8, ui.card(output_widget('overall_match_bar_graph'), style='height: 400px;')
-                ),
+                ), 
             )
+        ),
         )
-    )
 
 @module.server
 def overall_panel_server(input,output,session,match_played_place):
@@ -66,17 +72,20 @@ def overall_panel_server(input,output,session,match_played_place):
      @render.text
      def total_match_won():
          count_outcomes = count_of_outcomes()
-         return str(count_outcomes.loc[count_outcomes['Match Result'] == 'Win', 'Count'].values[0])
+         total_win_pct_num = total_win_pct()
+         return str(count_outcomes.loc[count_outcomes['Match Result'] == 'Win', 'Count'].values[0]) + ' (' + total_win_pct_num + '%)'
      
      @render.text
      def total_match_drawed():
          count_outcomes = count_of_outcomes()
-         return str(count_outcomes.loc[count_outcomes['Match Result'] == 'Draw', 'Count'].values[0])
+         total_draw_pct_num = total_draw_pct()
+         return str(count_outcomes.loc[count_outcomes['Match Result'] == 'Draw', 'Count'].values[0]) + ' (' + total_draw_pct_num + '%)'
      
      @render.text
      def total_match_lost():
          count_outcomes = count_of_outcomes()
-         return str(count_outcomes.loc[count_outcomes['Match Result'] == 'Lost', 'Count'].values[0])
+         total_lost_pct_num = total_lost_pct()     
+         return str(count_outcomes.loc[count_outcomes['Match Result'] == 'Lost', 'Count'].values[0]) + ' (' + total_lost_pct_num + '%)'
      
      @output
      @render.data_frame
@@ -167,6 +176,39 @@ def overall_panel_server(input,output,session,match_played_place):
         fig = plot_bar_graph(temp,'Season','Number Of Games', log=log)
         fig = conver_bar_plot_for_valuebox(fig,log)
         return fig
+      
+     @reactive.calc
+     def total_win_pct():
+         barca_data_filtered = apply_filter(barca_data, match_played_place(), log)
+         print(len(barca_data_filtered))
+         barca_data_filtered_win = barca_data_filtered.loc[barca_data_filtered['Match Result'] == 'Win']
+         total_win = len(barca_data_filtered_win)
+
+         win_pct = round((total_win / len(barca_data_filtered)) * 100, 2) if total_win != 0 else 0
+
+         return str(win_pct)
+     
+     @reactive.calc
+     def total_lost_pct():
+         barca_data_filtered = apply_filter(barca_data, match_played_place(), log)
+         print(len(barca_data_filtered))
+         barca_data_filtered_lost = barca_data_filtered.loc[barca_data_filtered['Match Result'] == 'Lost']
+         total_lost = len(barca_data_filtered_lost)
+
+         lost_pct = round((total_lost / len(barca_data_filtered)) * 100, 2) if total_lost != 0 else 0
+
+         return str(lost_pct)
+     
+     @reactive.calc
+     def total_draw_pct():
+         barca_data_filtered = apply_filter(barca_data, match_played_place(), log)
+         print(len(barca_data_filtered))
+         barca_data_filtered_draw = barca_data_filtered.loc[barca_data_filtered['Match Result'] == 'Draw']
+         total_draw = len(barca_data_filtered_draw)
+
+         draw_pct = round((total_draw / len(barca_data_filtered)) * 100, 2) if total_draw != 0 else 0
+
+         return str(draw_pct)
 
        
 
