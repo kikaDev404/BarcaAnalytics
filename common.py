@@ -36,4 +36,8 @@ def apply_filter(df, match_played_palce, log):
     elif match_played_palce == 'Home':
         return df.loc[df['HomeTeam'] == 'Barcelona']
     return df.loc[df['AwayTeam'] == 'Barcelona']
+
+
+    
+
     

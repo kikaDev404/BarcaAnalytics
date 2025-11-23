@@ -7,6 +7,7 @@ from shinywidgets import output_widget, render_widget
 from charts import*
 import ba_colors_collection.ba_colors as colors
 from pre_process import*
+from openai import OpenAI
 
 project_root = config.DIR_NAMES.project_root
 log_folder = join(project_root, config.DIR_NAMES.log_folder) 
@@ -22,13 +23,14 @@ def side_bar_ui():
         ui.card(
             'Filters',
             ui.input_select('match_played_place', 'Match Played', choices=['Home & Away', 'Home', 'Away'], selected='Home & Away')
-        )
+        ),
     )
 
 log.info('Sidebar loaded')
 
 @module.server
 def side_bar_server(input, output,session):
+
 
     return input.match_played_place
 
