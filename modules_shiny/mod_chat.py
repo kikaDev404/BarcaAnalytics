@@ -9,6 +9,8 @@ import ba_colors_collection.ba_colors as colors
 from pre_process import*
 from openai import OpenAI
 from agent_utils import*
+import re
+import json
 
 project_root = config.DIR_NAMES.project_root
 log_folder = join(project_root, config.DIR_NAMES.log_folder) 
@@ -18,8 +20,28 @@ log = log_obj.get_logger()
 
 log.info('Lodding Chat tab')
 
-agent_prompt = "you are an helpful assistant. you are integrated to a dashboard named Barca Analytics. you help the user to navigate the dashboards, get insights about the data and do changes to the dashboard on user behalf."
-memory = [] + make_system_message(agent_prompt)
+system_instruction = """
+You are a helpful assistant integrated into the Barca Analytics dashboard. you help the user to get the insights about the data, modify the filters and helps them with dashboard navigation.
+The dashboard show the historical data of barcelona match from 2000 to 2025.
+there are many things in the dashboard. 
+You can update the 'Match Played' filter which is there in the dashboard. 
+
+To change the filter, you MUST output a JSON block at the end of your response. The tool or the function which I have to help you to update the filter is clled update_filter(value).
+The valid values for 'value' are: "Home", "Away", "Home & Away". 
+
+Example format:
+{
+"tool": "update_filter",
+"parameters": {
+"value": "Home"
+}
+}
+
+text
+Only use this JSON when the user explicitly asks to change the filter or view.
+"""
+
+memory = [] + make_system_message(system_instruction)
 
 ollama = OpenAI(
     api_key = 'ollama',
@@ -34,17 +56,52 @@ def chat_ui():
     )
 
 @module.server
-def chat_server(input,output,session, filter_state):
+def chat_server(input, output, session, filter_state): # Ensure filter_state is passed here
     chat = ui.Chat("agent_chat")
 
-    def update_filter(new_value):
-         # Instead of updating UI directly, we update the Shared State
-         filter_state.set(new_value)
+    # Helper function to update the shared state
+    def update_filter(new_val):
+        valid_options = ['Home', 'Away', 'Home & Away']
+        if new_val in valid_options:
+            filter_state.set(new_val) 
+            
+            return True
+        return False
 
     @chat.on_user_submit
     async def handle_user_input(user_input: str):
         global memory
-        agent_response, memory = chat_ollama(ollama,user_input,memory)
-        update_filter('Home')
+        
+        # 1. Get response from Ollama
+        agent_response, memory = chat_ollama(ollama, user_input, memory)
+        
+        # 2. Regex to find JSON block (looks for `````` or just { ... })
+        json_pattern = r"``````|(\{.*\})"
+        match = re.search(json_pattern, agent_response, re.DOTALL)
+        
+        cleaned_response = agent_response
 
-        await chat.append_message(agent_response)
+        if match:
+            try:
+                # Extract the JSON string (group 1 or group 2)
+                json_str = match.group(1) if match.group(1) else match.group(2)
+                command_data = json.loads(json_str)
+                
+                # 3. Check tool name and execute
+                if command_data.get("tool") == "update_filter":
+                    val = command_data.get("parameters", {}).get("value")
+                    if update_filter(val):
+                        # Optional: Add a system note that it worked
+                        agent_response, memory = chat_ollama(ollama, 'I have sucessfully updated the filter', memory)
+                        print(f"Agent updated filter to: {val}")
+                
+                # 4. Remove the JSON code block from the chat display
+                # This keeps the UI clean for the user
+                cleaned_response = agent_response.replace(match.group(0), "").strip()
+                
+            except json.JSONDecodeError:
+                pass # JSON was malformed, just show the text
+
+        # 5. Append only the text part to the chat
+        if cleaned_response:
+            await chat.append_message(process_ai_response(cleaned_response))
