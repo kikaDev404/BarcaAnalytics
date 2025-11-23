@@ -29,7 +29,18 @@ def side_bar_ui():
 log.info('Sidebar loaded')
 
 @module.server
-def side_bar_server(input, output,session):
+def side_bar_server(input, output,session, filter_state):
+    @reactive.effect
+    def _():
+        filter_state.set(input.match_played_place())
+
+    @reactive.effect
+    def _():
+        # Only update if the value is actually different to avoid loops
+        current_val = filter_state()
+        if input.match_played_place() != current_val:
+            ui.update_select('match_played_place', selected=current_val)
+
 
 
     return input.match_played_place

@@ -41,10 +41,11 @@ app_ui = ui.page_sidebar(
 
 # Define Server
 def server(input, output, session):
-    match_played_place_filter = side_bar_server('sidebar')
-    overall_panel_server('Overall', match_played_place=match_played_place_filter)
-    el_classico_server('el_classico',match_played_place_filter)
-    chat_server('chat')
+    filter_state = reactive.Value("Home & Away")
+    match_played_place_filter = side_bar_server('sidebar', filter_state)
+    overall_panel_server('Overall', match_played_place=filter_state)
+    el_classico_server('el_classico',match_played_place = filter_state)
+    chat_server('chat' , filter_state)
 
 # Run App
 app = App(app_ui, server)

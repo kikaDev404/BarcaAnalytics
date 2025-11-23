@@ -34,12 +34,17 @@ def chat_ui():
     )
 
 @module.server
-def chat_server(input,output,session):
+def chat_server(input,output,session, filter_state):
     chat = ui.Chat("agent_chat")
+
+    def update_filter(new_value):
+         # Instead of updating UI directly, we update the Shared State
+         filter_state.set(new_value)
 
     @chat.on_user_submit
     async def handle_user_input(user_input: str):
         global memory
         agent_response, memory = chat_ollama(ollama,user_input,memory)
-        
+        update_filter('Home')
+
         await chat.append_message(agent_response)
