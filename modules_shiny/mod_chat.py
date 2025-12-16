@@ -78,7 +78,7 @@ def chat_server(input, output, session, filter_state): # Ensure filter_state is 
         global memory
         
         # 1. Get response from Ollama
-        agent_response, memory = chat_ollama(openrouter, user_input, memory)
+        agent_response, memory = chat_openrouter(openrouter, user_input, memory)
         
         # 2. Regex to find JSON block (looks for `````` or just { ... })
         json_pattern = r"``````|(\{.*\})"
@@ -97,7 +97,7 @@ def chat_server(input, output, session, filter_state): # Ensure filter_state is 
                     val = command_data.get("parameters", {}).get("value")
                     if update_filter(val):
                         # Optional: Add a system note that it worked
-                        agent_response, memory = chat_ollama(openrouter, 'I have sucessfully updated the filter', memory)
+                        agent_response, memory = chat_openrouter(openrouter, 'I have sucessfully updated the filter', memory)
                         print(f"Agent updated filter to: {val}")
                 
                 # 4. Remove the JSON code block from the chat display
