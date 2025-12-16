@@ -11,6 +11,11 @@ from openai import OpenAI
 from agent_utils import*
 import re
 import json
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_KEY")
 
 project_root = config.DIR_NAMES.project_root
 log_folder = join(project_root, config.DIR_NAMES.log_folder) 
@@ -43,9 +48,9 @@ Only use this JSON when the user explicitly asks to change the filter or view.
 
 memory = [] + make_system_message(system_instruction)
 
-ollama = OpenAI(
-    api_key = 'ollama',
-    base_url = "http://127.0.0.1:11434/v1"
+openrouter = OpenAI(
+    api_key = OPENROUTER_API_KEY,
+    base_url = "https://openrouter.ai/api/v1"
 )
 
 
@@ -73,7 +78,7 @@ def chat_server(input, output, session, filter_state): # Ensure filter_state is 
         global memory
         
         # 1. Get response from Ollama
-        agent_response, memory = chat_ollama(ollama, user_input, memory)
+        agent_response, memory = chat_openrouter(openrouter, user_input, memory)
         
         # 2. Regex to find JSON block (looks for `````` or just { ... })
         json_pattern = r"``````|(\{.*\})"
@@ -92,7 +97,7 @@ def chat_server(input, output, session, filter_state): # Ensure filter_state is 
                     val = command_data.get("parameters", {}).get("value")
                     if update_filter(val):
                         # Optional: Add a system note that it worked
-                        agent_response, memory = chat_ollama(ollama, 'I have sucessfully updated the filter', memory)
+                        agent_response, memory = chat_openrouter(openrouter, 'I have sucessfully updated the filter', memory)
                         print(f"Agent updated filter to: {val}")
                 
                 # 4. Remove the JSON code block from the chat display
