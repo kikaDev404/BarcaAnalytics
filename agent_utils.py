@@ -19,6 +19,20 @@ def chat_ollama(agent, user_message, history):
 
     return assistant_reply, history
 
+def chat_openrouter(agent, user_message, history):
+    history.append({"role": "user", "content": user_message})
+
+    response = agent.chat.completions.create(
+        model='z-ai/glm-4.5-air:free',
+        messages=history
+    )
+
+    assistant_reply = response.choices[0].message.content
+
+    history.append({"role": "assistant", "content": assistant_reply})
+
+    return assistant_reply, history
+
 def process_ai_response(response):
     if "<think>" in response and "</think>" in response:
         before_think, rest = response.split("<think>", 1)
